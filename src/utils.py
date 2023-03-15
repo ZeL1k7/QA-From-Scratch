@@ -16,15 +16,12 @@ class QuestionDataset(torch.utils.data.Dataset):
             right_on="ParentId",
         )
         self._dataset = self._dataset[self._dataset.Body_y.notna()]
+        self._dataset = self._dataset.reset_index(drop=True)
 
     def __getitem__(self, idx):
         question = self._question_df.iloc[idx]
-        question_id = question.Id
         question = [question.Title, question.Body]
-        answers = self._dataset[self._dataset.Id_x == question_id]
-        answers = answers.sort_values(by="Score", ascending=False)
-        best_answer = answers.Body_y.values[0]
-        return question, best_answer
+        return question
 
     def __len__(self):
-        return len(self._question_df)
+        return len(self._dataset)
