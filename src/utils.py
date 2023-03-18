@@ -55,10 +55,10 @@ def mean_pooling(
 
 
 def get_sentence_embedding(
-    sentense: str, tokenizer: AutoTokenizer, model: AutoModel
+    sentence: str, tokenizer: AutoTokenizer, model: AutoModel
 ) -> torch.FloatTensor:
     encoded_input = tokenizer(
-        sentense,
+        sentence,
         truncation=True,
         padding=True,
         return_tensors="pt",
