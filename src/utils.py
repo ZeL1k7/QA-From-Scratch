@@ -7,25 +7,21 @@ from transformers import AutoTokenizer, AutoModel
 
 
 class QuestionDataset(torch.utils.data.Dataset):
-    def __init__(self, questions_path: Path):
-        self._question_df = pd.read_csv(questions_path, encoding="latin-1")
-        self._question_df = self._question_df[["Id", "Title", "Body"]]
+    def __init__(self, questions_path: Path, answers_path: Path):
+        self.question_df = pd.read_csv(questions_path, encoding="latin-1")
+        self.question_df = self.question_df[["Id", "Title", "Body"]]
+        self.answers_df = pd.read_csv(answers_path, encoding="latin-1")
+        self.answers_df = self.answers_df[["ParentId", "Body", "Score"]]
 
     def __getitem__(self, idx):
-        question = self._question_df.iloc[idx].Title
+        question = self.question_df.iloc[idx].Title
         return question
 
     def __len__(self):
-        return len(self._question_df)
+        return len(self.question_df)
 
-
-class AnswerDataset:
-    def __init__(self, answers_path: Path):
-        self._answers_df = pd.read_csv(answers_path, encoding="latin-1")
-        self._answers_df = self._answers_df[["ParentId", "Body", "Score"]]
-
-    def __getitem__(self, parent_idx):
-        answers = self._answers_df[self._answers_df.ParentId == parent_idx]
+    def get_answer(self, parent_idx):
+        answers = self.answers_df[self.answers_df.ParentId == parent_idx]
         if answers.empty:
             return "Answers not found"
         answers = answers.sort_values(by="Score", ascending=False)

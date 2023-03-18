@@ -3,7 +3,7 @@ import torch
 import faiss
 import numpy as np
 from transformers import AutoTokenizer, AutoModel
-from utils import mean_pooling, AnswerDataset, QuestionDataset, get_sentence_embedding
+from utils import QuestionDataset, get_sentence_embedding
 
 
 def train_index(
@@ -48,7 +48,6 @@ def add_sentence_to_index(
 
 def get_answer(
     index: faiss.IndexIVFFlat,
-    answer_dataset: AnswerDataset,
     question_dataset: QuestionDataset,
     tokenizer: AutoTokenizer,
     model: AutoModel,
@@ -57,8 +56,8 @@ def get_answer(
 ) -> pd.DataFrame:
     query = get_sentence_embedding(sentence, tokenizer, model)
     distances, question_idxs = index.search(query, neighbors)
-    answers_idxs = question_dataset.iloc[question_idxs[0]].Id.values
+    answers_idxs = question_dataset.question_df.iloc[question_idxs[0]].Id.values
     answer_df = pd.DataFrame()
     for idx in answers_idxs:
-        answer_df = pd.concat([answer_df, answer_dataset.get_answer(idx)])
+        answer_df = pd.concat([answer_df, question_dataset.get_answer(idx)])
     return answer_df
