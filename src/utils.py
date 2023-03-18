@@ -24,7 +24,7 @@ class AnswerDataset:
         self._answers_df = pd.read_csv(answers_path, encoding="latin-1")
         self._answers_df = self._answers_df[["ParentId", "Body", "Score"]]
 
-    def get_answer(self, parent_idx):
+    def __getitem__(self, parent_idx):
         answers = self._answers_df[self._answers_df.ParentId == parent_idx]
         if answers.empty:
             return "Answers not found"
@@ -40,7 +40,9 @@ def load_model(device: torch.device = "cpu") -> torch.nn.Module:
     return tokenizer, model
 
 
-def mean_pooling(model_output: torch.FloatTensor, attention_mask: torch.BoolTensor) -> torch.FloatTensor:
+def mean_pooling(
+    model_output: torch.FloatTensor, attention_mask: torch.BoolTensor
+) -> torch.FloatTensor:
     """
     Make sentence embedding averaging word embeddings
     :param model_output:
@@ -54,6 +56,21 @@ def mean_pooling(model_output: torch.FloatTensor, attention_mask: torch.BoolTens
     return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(
         input_mask_expanded.sum(1), min=1e-9
     )
+
+
+def get_sentence_embedding(
+    sentense: str, tokenizer: AutoTokenizer, model: AutoModel
+) -> torch.FloatTensor:
+    encoded_input = tokenizer(
+        sentense,
+        truncation=True,
+        padding=True,
+        return_tensors="pt",
+    )
+    word_embeddings = model(**encoded_input)
+    sentence_embedding = mean_pooling(word_embeddings, encoded_input["attention_mask"])
+    sentence_embedding = sentence_embedding.detach().cpu().numpy()
+    return sentence_embedding
 
 
 def create_index(embedding_dim: int = 384, nlist: int = 4500) -> faiss.IndexIVFFlat:
