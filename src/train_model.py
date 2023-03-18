@@ -1,8 +1,7 @@
 import argparse
 import math
 import torch
-import faiss
-from utils import QuestionDataset, load_model, create_index
+from utils import QuestionDataset, load_model, load_tokenizer, create_index, get_n_splits, save_index
 from model import train_index, add_sentence_to_index
 
 
@@ -18,13 +17,27 @@ if __name__ == "__main__":
     dataset = QuestionDataset(args.question_path, args.answer_path)
     dataloader = torch.utils.data.DataLoader(dataset, args.batch_size)
     device = args.device
-    tokenizer, model = load_model(device)
-    nlist = int(4 * math.sqrt(len(dataset)))
+    tokenizer = load_tokenizer()
+    model = load_model(device)
 
-    index = create_index(384, nlist)
-    index = train_index(index, tokenizer, model, dataset, 384, 32)
+    n_splits = get_n_splits(dataset_size=len(dataset))
+
+    index = create_index(embedding_dim=384, n_splits=n_splits)
+    index = train_index(
+        index=index,
+        tokenizer=tokenizer,
+        model=model,
+        dataset=dataset,
+        embedding_dim=384,
+        batch_size=32,
+    )
 
     for batch in dataloader:
-        add_sentence_to_index(index, tokenizer, model, batch, False)
+        add_sentence_to_index(
+            index=index,
+            tokenizer=tokenizer,
+            model=model,
+            sentence=batch,
+        )
 
-    faiss.write_index(index, args.index_path)
+    save_index(index=index, index_path=args.index_path)

@@ -1,3 +1,4 @@
+import math
 from functools import lru_cache
 from pathlib import Path
 import torch
@@ -61,21 +62,40 @@ def mean_pooling(
 
 
 def get_sentence_embedding(
-    sentence: str, tokenizer: AutoTokenizer, model: AutoModel
+    batch: list[str], tokenizer: AutoTokenizer, model: AutoModel
 ) -> torch.FloatTensor:
     encoded_input = tokenizer(
-        sentence,
+        batch,
         truncation=True,
         padding=True,
         return_tensors="pt",
     )
     word_embeddings = model(**encoded_input)
-    sentence_embedding = mean_pooling(word_embeddings, encoded_input["attention_mask"])
+    sentence_embedding = mean_pooling(
+        model_output=word_embeddings,
+        attention_mask=encoded_input["attention_mask"],
+    )
     sentence_embedding = sentence_embedding.detach().cpu().numpy()
     return sentence_embedding
 
 
-def create_index(embedding_dim: int = 384, nlist: int = 4500) -> faiss.IndexIVFFlat:
+def create_index(embedding_dim: int = 384, n_splits: int = 4500) -> faiss.Index:
     quantizer = faiss.IndexFlatL2(embedding_dim)
-    index = faiss.IndexIVFFlat(quantizer, embedding_dim, nlist)
+    index = faiss.IndexIVFFlat(quantizer, embedding_dim, n_splits)
     return index
+
+
+def get_n_splits(dataset_size: int, n_splits: int = None) -> int:
+    """
+    https://github.com/facebookresearch/faiss/wiki/Guidelines-to-choose-an-index
+    :param dataset_size:
+    :param n_splits:
+    :return:
+    """
+    if n_splits is None:
+        n_splits = int(4 * math.sqrt(dataset_size))
+    return n_splits
+
+
+def save_index(index: faiss.Index, index_path: Path) -> None:
+    faiss.write_index(index, index_path)
