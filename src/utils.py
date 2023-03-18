@@ -1,7 +1,9 @@
+from functools import lru_cache
 from pathlib import Path
 import torch
 import pandas as pd
 import faiss
+from transformers import AutoTokenizer, AutoModel
 
 
 class QuestionDataset(torch.utils.data.Dataset):
@@ -15,6 +17,14 @@ class QuestionDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self._dataset)
+
+
+@lru_cache(1)
+def load_model(device: torch.device = "cpu") -> torch.nn.Module:
+    tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+    model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+    model.to(device)
+    return tokenizer, model
 
 
 def mean_pooling(model_output: torch.FloatTensor, attention_mask: torch.BoolTensor) -> torch.FloatTensor:
