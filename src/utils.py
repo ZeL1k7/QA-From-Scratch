@@ -1,6 +1,7 @@
 from pathlib import Path
 import torch
 import pandas as pd
+import faiss
 
 
 class QuestionDataset(torch.utils.data.Dataset):
@@ -30,3 +31,9 @@ def mean_pooling(model_output: torch.FloatTensor, attention_mask: torch.BoolTens
     return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(
         input_mask_expanded.sum(1), min=1e-9
     )
+
+
+def create_index(embedding_dim: int = 384, nlist: int = 4500) -> faiss.IndexIVFFlat:
+    quantizer = faiss.IndexFlatL2(embedding_dim)
+    index = faiss.IndexIVFFlat(quantizer, embedding_dim, nlist)
+    return index
