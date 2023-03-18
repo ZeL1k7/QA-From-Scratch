@@ -16,7 +16,7 @@ class QuestionDataset(torch.utils.data.Dataset):
         return question
 
     def __len__(self):
-        return len(self._dataset)
+        return len(self._question_df)
 
 
 @lru_cache(1)
