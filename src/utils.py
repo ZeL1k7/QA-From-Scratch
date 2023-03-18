@@ -7,33 +7,39 @@ from transformers import AutoTokenizer, AutoModel
 
 
 class QuestionDataset(torch.utils.data.Dataset):
-    def __init__(self, questions_path: Path, answers_path: Path):
-        self.question_df = pd.read_csv(questions_path, encoding="latin-1")
-        self.question_df = self.question_df[["Id", "Title", "Body"]]
-        self.answers_df = pd.read_csv(answers_path, encoding="latin-1")
-        self.answers_df = self.answers_df[["ParentId", "Body", "Score"]]
+    def __init__(self, texts: list[str]) -> None:
+        super().__init__()
+        self._texts = texts
+
+    @classmethod
+    def from_df(
+        cls,
+        path: Path,
+        text_column_name: str,
+        **dataframe_kwargs,
+    ) -> "QuestionDataset":
+        dataframe = pd.read_csv(path, **dataframe_kwargs)
+        texts = dataframe[text_column_name].tolist()
+        return cls(texts=texts)
 
     def __getitem__(self, idx):
-        question = self.question_df.iloc[idx].Title
-        return question
+        return self._texts[idx]
 
     def __len__(self):
-        return len(self.question_df)
-
-    def get_answer(self, parent_idx):
-        answers = self.answers_df[self.answers_df.ParentId == parent_idx]
-        if answers.empty:
-            return "Answers not found"
-        answers = answers.sort_values(by="Score", ascending=False)
-        return answers
+        return len(self._texts)
 
 
 @lru_cache(1)
-def load_model(device: torch.device = "cpu") -> torch.nn.Module:
-    tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+def load_model(device: torch.device = "cpu") -> AutoModel:
     model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
     model.to(device)
-    return tokenizer, model
+    return model
+
+
+@lru_cache(1)
+def load_tokenizer(*args, **kwargs) -> AutoTokenizer:
+    tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+    return tokenizer
 
 
 def mean_pooling(
