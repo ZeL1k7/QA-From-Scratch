@@ -17,7 +17,7 @@ if __name__ == "__main__":
     dataset = QuestionDataset(args.question_path)
     dataloader = torch.utils.data.DataLoader(dataset, args.batch_size)
     device = args.device
-    model, tokenizer = load_model(device)
+    tokenizer, model = load_model(device)
     nlist = int(4 * math.sqrt(len(dataset)))
 
     index = create_index(384, nlist)
