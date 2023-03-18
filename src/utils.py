@@ -19,6 +19,19 @@ class QuestionDataset(torch.utils.data.Dataset):
         return len(self._question_df)
 
 
+class AnswerDataset:
+    def __init__(self, answers_path: Path):
+        self._answers_df = pd.read_csv(answers_path, encoding="latin-1")
+        self._answers_df = self._answers_df[["ParentId", "Body", "Score"]]
+
+    def get_answer(self, parent_idx):
+        answers = self._answers_df[self._answers_df.ParentId == parent_idx]
+        if answers.empty:
+            return "Answers not found"
+        answers = answers.sort_values(by="Score", ascending=False)
+        return answers
+
+
 @lru_cache(1)
 def load_model(device: torch.device = "cpu") -> torch.nn.Module:
     tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
