@@ -9,12 +9,15 @@ class IQAIndex(ABC):
         ...
 
     @abstractmethod
-    def update(self, item, idx):
+    def update(self, idx, item):
         ...
 
     @abstractmethod
-    def get(self, item):
+    def get(self, idx):
         ...
+
+    def get_items(self, items: list[int]) -> list[str]:
+        return [self.get(idx) for idx in items]
 
 
 class QAIndexHashMap(IQAIndex):
@@ -24,10 +27,10 @@ class QAIndexHashMap(IQAIndex):
 
     def build(self) -> None:
         for idx, item in enumerate(self._dataset):
-            self._hash_map(item, idx)
+            self.update(idx, item)
 
-    def update(self, item: int, idx: int) -> None:
-        self._hash_map[item].append(idx)
+    def update(self, idx: int, item: str) -> None:
+        self._hash_map[idx].append(item)
 
-    def get(self, item: int) -> list[int]:
-        return self._hash_map[item]
+    def get(self, idx: int) -> list[str]:
+        return self._hash_map[idx]
