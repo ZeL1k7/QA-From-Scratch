@@ -3,7 +3,7 @@ import subprocess
 from fastapi import FastAPI
 from utils import load_tokenizer, load_model
 from vector_index import VectorIndexIVFFlat
-from qa_index import QAIndexHashMap, load_qa_index, get_answer
+from qa_index import load_qa_index, get_answer
 
 app = FastAPI()
 
@@ -48,7 +48,6 @@ def send_answer(question: str):
     model = load_model(device=device)
     index = VectorIndexIVFFlat(..., ..., ..., pretrained=True)
     index.load("../data/q.index")
-    qa_index = QAIndexHashMap(...)
     qa_index = load_qa_index("../data/qa.pkl")
     answer = get_answer(
         index=index,
@@ -58,3 +57,4 @@ def send_answer(question: str):
         device=device,
         sentence=[question],
     )
+    return answer

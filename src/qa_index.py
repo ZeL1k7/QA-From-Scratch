@@ -49,8 +49,8 @@ def save_qa_index(qa_index: IQAIndex, index_save_path: Path) -> None:
 
 def load_qa_index(index_path: Path) -> IQAIndex:
     with open(index_path, "rb+") as f:
-        pickle.load(f)
-
+        qa_index = pickle.load(f)
+    return qa_index
 
 def get_answer(
     index: IVectorIndex,

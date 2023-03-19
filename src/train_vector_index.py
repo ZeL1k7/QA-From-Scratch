@@ -19,10 +19,10 @@ def main(question_path: Path, index_save_path: Path, batch_size: int, device: st
 
     n_splits = get_n_splits(dataset_size=len(dataset))
 
-    Index = VectorIndexIVFFlat(dim=384, n_splits=n_splits, neighbors=4)
-    Index.build()
+    index = VectorIndexIVFFlat(dim=384, n_splits=n_splits, neighbors=4)
+    index.build()
 
-    Index.train(
+    index.train(
         tokenizer=tokenizer,
         model=model,
         dataset=dataset,
@@ -30,9 +30,9 @@ def main(question_path: Path, index_save_path: Path, batch_size: int, device: st
     )
 
     for batch in dataloader:
-        Index.update(batch)
+        index.update(batch)
 
-    Index.save(index_save_path)
+    index.save(index_save_path)
 
 
 if __name__ == "__main__":
