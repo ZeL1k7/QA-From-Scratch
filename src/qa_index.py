@@ -4,6 +4,10 @@ from datasets import AnswerDataset
 from transformers import AutoTokenizer, AutoModel
 from vector_index import IVectorIndex
 from utils import get_sentence_embedding
+import torch
+from pathlib import Path
+import pickle
+
 
 class IQAIndex(ABC):
     @abstractmethod
@@ -37,20 +41,32 @@ class QAIndexHashMap(IQAIndex):
     def get(self, idx: int) -> list[str]:
         return self._hash_map[idx]
 
+
+def save_qa_index(qa_index: IQAIndex, index_save_path: Path) -> None:
+    with open(index_save_path, "wb+") as f:
+        pickle.dump(qa_index, f)
+
+
+def load_qa_index(index_path: Path) -> IQAIndex:
+    with open(index_path, "rb+") as f:
+        pickle.load(f)
+
+
 def get_answer(
     index: IVectorIndex,
     qa_index: IQAIndex,
     tokenizer: AutoTokenizer,
     model: AutoModel,
+    device: torch.device,
     sentence: list[str],
-    neighbors: int = 4,
 ) -> list[str]:
     query = get_sentence_embedding(
         batch=sentence,
         tokenizer=tokenizer,
         model=model,
+        device=device,
     )
 
-    distances, question_idxs = index.get(query, neighbors)
+    distances, question_idxs = index.get(query)
 
     return qa_index.get_items(question_idxs)

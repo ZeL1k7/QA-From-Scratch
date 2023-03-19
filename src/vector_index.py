@@ -26,11 +26,15 @@ class IVectorIndex(ABC):
 
 
 class VectorIndexIVFFlat(IVectorIndex):
-    def __init__(self, n_splits: int, dim: int, neighbors: int) -> None:
-        self.index = None
+    def __init__(
+        self, n_splits: int, dim: int, neighbors: int, pretrained: bool = False
+    ) -> None:
         self.dim = dim
         self.n_splits = n_splits
         self.neighbors = neighbors
+        self.index = None
+        if not pretrained:
+            self.index = self.build()
 
     def build(self) -> faiss.Index:
         quantizer = faiss.IndexFlatL2(self.dim)
@@ -52,6 +56,7 @@ class VectorIndexIVFFlat(IVectorIndex):
         batch_size: int,
     ) -> None:
         if not self.index.is_trained:
+            device = "cuda" if torch.cuda.is_available() else "cpu"
             dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size)
             index_data = np.zeros((len(dataset), self.dim), dtype=np.float32)
 
@@ -60,6 +65,7 @@ class VectorIndexIVFFlat(IVectorIndex):
                     batch=batch,
                     tokenizer=tokenizer,
                     model=model,
+                    device=device,
                 )
 
                 index_data[idx: (idx + 1)] = sentence_embeddings
@@ -73,3 +79,5 @@ class VectorIndexIVFFlat(IVectorIndex):
 
     def load(self, index_path: Path) -> None:
         self.index = faiss.read_index(index_path)
+        self.n_splits = self.index.nlist
+        self.dim = self.index.d
