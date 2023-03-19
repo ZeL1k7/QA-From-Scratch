@@ -2,32 +2,8 @@ import math
 from functools import lru_cache
 from pathlib import Path
 import torch
-import pandas as pd
 import faiss
 from transformers import AutoTokenizer, AutoModel
-
-
-class QuestionDataset(torch.utils.data.Dataset):
-    def __init__(self, texts: list[str]) -> None:
-        super().__init__()
-        self._texts = texts
-
-    @classmethod
-    def from_df(
-        cls,
-        path: Path,
-        text_column_name: str,
-        **dataframe_kwargs,
-    ) -> "QuestionDataset":
-        dataframe = pd.read_csv(path, **dataframe_kwargs)
-        texts = dataframe[text_column_name].tolist()
-        return cls(texts=texts)
-
-    def __getitem__(self, idx):
-        return self._texts[idx]
-
-    def __len__(self):
-        return len(self._texts)
 
 
 @lru_cache(1)
