@@ -10,7 +10,7 @@ from datasets import QuestionDataset
 
 class IVectorIndex(ABC):
     @abstractmethod
-    def build(self, dim: int):
+    def build(self):
         ...
 
     @abstractmethod
@@ -26,29 +26,30 @@ class IVectorIndex(ABC):
 
 
 class VectorIndexIVFFlat(IVectorIndex):
-    def __init__(self, n_splits: int) -> None:
-        self.index = self.build()
-        self.n_splits = n_splits
-
-    def build(self, dim: int) -> faiss.Index:
+    def __init__(self, n_splits: int, dim: int, neighbors: int) -> None:
+        self.index = None
         self.dim = dim
-        quantizer = faiss.IndexFlatL2(dim)
-        index = faiss.IndexIVFFlat(quantizer, dim, self.n_splits)
+        self.n_splits = n_splits
+        self.neighbors = neighbors
+
+    def build(self) -> faiss.Index:
+        quantizer = faiss.IndexFlatL2(self.dim)
+        index = faiss.IndexIVFFlat(quantizer, self.dim, self.n_splits)
         return index
 
     def update(self, vector: np.array) -> faiss.Index:
         self.index.add(vector)
 
-    def get(self, query: np.array, neighbors: int) -> list[list[float], list[int]]:
-        distances, vectors = self.index.search(query, neighbors)
+    def get(self, query: np.array) -> list[list[float], list[int]]:
+        distances, vectors = self.index.search(query, self.neighbors)
         return distances[0], vectors[0]
 
-    def train_index(
+    def train(
         self,
         tokenizer: AutoTokenizer,
         model: AutoModel,
         dataset: QuestionDataset,
-        batch_size: int = 32,
+        batch_size: int,
     ) -> None:
         if not self.index.is_trained:
             dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size)
@@ -67,8 +68,8 @@ class VectorIndexIVFFlat(IVectorIndex):
         else:
             raise NotTrainedException(self.index)
 
-    def save_index(self, index_path: Path) -> None:
+    def save(self, index_path: Path) -> None:
         faiss.write_index(self.index, index_path)
 
-    def load_index(self, index_path: Path) -> None:
+    def load(self, index_path: Path) -> None:
         self.index = faiss.read_index(index_path)
