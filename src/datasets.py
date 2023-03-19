@@ -4,9 +4,36 @@ from pydantic import BaseModel, Field
 import torch
 
 
+class Answer(BaseModel):
+    parent_id: int = Field(..., description="Id of parent question")
+    text: str = Field(..., description="Text of the answer")
+    score: int = Field(..., description="Score of the answer")
+
+
+class Answers(BaseModel):
+    items: List[Answer]
+
+
+class AnswerDataset:
+    def __init__(self, answers: Answers) -> None:
+        self.answers = answers
+
+    @classmethod
+    def from_json(cls, path: Path):
+        answers = Answers.parse_file(path)
+        return cls(answers=answers)
+
+    def __getitem__(self, idx):
+        item = self.answers.items[idx]
+        return item.parent_id[idx], item.title[idx], item.score[idx]
+
+    def __len__(self):
+        return len(self.answers.items)
+
+
 class Question(BaseModel):
     id: int = Field(..., description="Unique identifier")
-    text: str = Field(..., description="Title of the question")
+    title: str = Field(..., description="Title of the question")
 
 
 class Questions(BaseModel):
@@ -16,7 +43,7 @@ class Questions(BaseModel):
 class QuestionDataset(torch.utils.data.Dataset):
     def __init__(self, questions: Questions) -> None:
         super().__init__()
-        self._questions = questions
+        self.questions = questions
 
     @classmethod
     def from_json(cls, path: Path):
@@ -24,7 +51,7 @@ class QuestionDataset(torch.utils.data.Dataset):
         return cls(questions=questions)
 
     def __getitem__(self, idx):
-        return self.texts[idx]
+        return self.questions.items[idx].title
 
     def __len__(self):
-        return len(self.texts)
+        return len(self.questions.items)
