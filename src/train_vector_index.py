@@ -16,22 +16,22 @@ def main(question_path: Path, index_save_path: Path, batch_size: int, device: st
 
     tokenizer = load_tokenizer()
     model = load_model(device)
-    print("loading finish")
+
     n_splits = get_n_splits(dataset_size=len(dataset))
 
     Index = VectorIndexIVFFlat(dim=384, n_splits=n_splits, neighbors=4)
     Index.build()
-    print("index build")
+
     Index.train(
         tokenizer=tokenizer,
         model=model,
         dataset=dataset,
         batch_size=32,
     )
-    print("index trained")
+
     for batch in dataloader:
         Index.update(batch)
-    print("index updated")
+
     Index.save(index_save_path)
 
 
