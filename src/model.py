@@ -1,9 +1,10 @@
-import pandas as pd
+import numpy as np
 import torch
 import faiss
-import numpy as np
 from transformers import AutoTokenizer, AutoModel
-from utils import QuestionDataset, get_sentence_embedding
+from utils import get_sentence_embedding
+from datasets import QuestionDataset
+from question_answer_index import IQAIndex
 
 
 def train_index(
@@ -48,20 +49,18 @@ def add_sentence_to_index(
 
 def get_answer(
     index: faiss.Index,
-    question_dataset: QuestionDataset,
+    qa_index: IQAIndex,
     tokenizer: AutoTokenizer,
     model: AutoModel,
     sentence: list[str],
     neighbors: int = 4,
-) -> pd.DataFrame:
+) -> list[str]:
     query = get_sentence_embedding(
         batch=sentence,
         tokenizer=tokenizer,
         model=model,
     )
+
     distances, question_idxs = index.search(query, neighbors)
-    answers_idxs = question_dataset.question_df.iloc[question_idxs[0]].Id.values
-    answer_df = pd.DataFrame()
-    for idx in answers_idxs:
-        answer_df = pd.concat([answer_df, question_dataset.get_answer(idx)])
-    return answer_df
+
+    return qa_index.get_items(question_idxs[0])
