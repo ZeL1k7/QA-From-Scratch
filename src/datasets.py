@@ -51,8 +51,7 @@ class AnswerDataset:
         return cls(answers=answers)
 
     def __getitem__(self, idx):
-        item = self.answers.items[idx]
-        return item.id, item.parent_id, item.title, item.score
+        return self.answers.items[idx]
 
     def __len__(self):
         return len(self.answers.items)
