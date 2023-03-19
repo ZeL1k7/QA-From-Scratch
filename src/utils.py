@@ -3,6 +3,7 @@ from functools import lru_cache
 import torch
 from transformers import AutoTokenizer, AutoModel
 
+
 @lru_cache(1)
 def load_model(device: torch.device = "cpu") -> AutoModel:
     model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
@@ -35,14 +36,17 @@ def mean_pooling(
 
 
 def get_sentence_embedding(
-    batch: list[str], tokenizer: AutoTokenizer, model: AutoModel
+    batch: list[str],
+    tokenizer: AutoTokenizer,
+    model: AutoModel,
+    device: torch.device,
 ) -> torch.FloatTensor:
     encoded_input = tokenizer(
         batch,
         truncation=True,
         padding=True,
         return_tensors="pt",
-    )
+    ).to(device)
     word_embeddings = model(**encoded_input)
     sentence_embedding = mean_pooling(
         model_output=word_embeddings,
