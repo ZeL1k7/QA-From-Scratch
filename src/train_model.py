@@ -2,7 +2,6 @@ from pathlib import Path
 import torch
 import typer
 from utils import (
-    QuestionDataset,
     load_model,
     load_tokenizer,
     create_index,
@@ -10,10 +9,11 @@ from utils import (
     save_index,
 )
 from model import train_index, add_sentence_to_index
+from datasets import QuestionDataset
 
 
 def main(question_path: Path, index_path: Path, batch_size: int, device: str):
-    dataset = QuestionDataset(question_path)
+    dataset = QuestionDataset.from_json(question_path)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size)
 
     tokenizer = load_tokenizer()
