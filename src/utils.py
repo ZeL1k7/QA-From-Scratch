@@ -1,8 +1,6 @@
 import math
 from functools import lru_cache
-from pathlib import Path
 import torch
-import faiss
 from transformers import AutoTokenizer, AutoModel
 
 
@@ -55,12 +53,6 @@ def get_sentence_embedding(
     return sentence_embedding
 
 
-def create_index(embedding_dim: int = 384, n_splits: int = 4500) -> faiss.Index:
-    quantizer = faiss.IndexFlatL2(embedding_dim)
-    index = faiss.IndexIVFFlat(quantizer, embedding_dim, n_splits)
-    return index
-
-
 def get_n_splits(dataset_size: int, n_splits: int = None) -> int:
     """
     https://github.com/facebookresearch/faiss/wiki/Guidelines-to-choose-an-index
@@ -73,5 +65,9 @@ def get_n_splits(dataset_size: int, n_splits: int = None) -> int:
     return n_splits
 
 
-def save_index(index: faiss.Index, index_path: Path) -> None:
-    faiss.write_index(index, index_path)
+class NotTrainedException(Exception):
+    def __init__(self, index):
+        self.index_type = type(index).__name__
+
+    def __str__(self):
+        return f"{self.index_type} should be trained before adding new vectors"
