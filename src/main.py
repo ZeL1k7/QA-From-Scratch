@@ -5,6 +5,7 @@ from utils import load_tokenizer, load_model
 from vector_index import VectorIndexIVFFlat
 from qa_index import load_qa_index, get_answer
 
+
 app = FastAPI()
 
 
@@ -29,9 +30,6 @@ def create_qa_index():
 
 @app.on_event("startup")
 def startup_event():
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    tokenizer = load_tokenizer()
-    model = load_model(device=device)
     create_vector_index()
     create_qa_index()
 
@@ -42,12 +40,12 @@ def send_question(question: str):
 
 
 @app.get("/send_answer")
-def send_answer(question: str):
+def send_answer(question: str, num_answers: int):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     tokenizer = load_tokenizer()
     model = load_model(device=device)
-    index = VectorIndexIVFFlat(..., ..., ..., pretrained=True)
-    index.load("../data/q.index")
+    index = VectorIndexIVFFlat(...,  ..., neighbors=num_answers, pretrained=True)
+    index.load("../data/question.index")
     qa_index = load_qa_index("../data/qa.pkl")
     answer = get_answer(
         index=index,

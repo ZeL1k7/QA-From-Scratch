@@ -27,7 +27,7 @@ class IVectorIndex(ABC):
 
 class VectorIndexIVFFlat(IVectorIndex):
     def __init__(
-        self, n_splits: int, dim: int, neighbors: int, pretrained: bool = False
+        self, dim: int, n_splits: int, neighbors: int, pretrained: bool = False
     ) -> None:
         self.dim = dim
         self.n_splits = n_splits
