@@ -1,9 +1,10 @@
+import pickle
 from abc import ABC, abstractmethod
 from pathlib import Path
 import faiss
 import numpy as np
 import torch
-from utils import get_sentence_embedding, get_n_splits, NotTrainedException
+from utils import get_sentence_embedding, NotTrainedException
 from transformers import AutoTokenizer, AutoModel
 from datasets import QuestionDataset
 
@@ -30,12 +31,10 @@ class VectorIndexIVFFlat(IVectorIndex):
         self,
         dim: int = 768,
         n_splits: int = 1,
-        neighbors: int = 1,
         pretrained: bool = False,
     ) -> None:
         self.dim = dim
         self.n_splits = n_splits
-        self.neighbors = neighbors
         self.index = None
         if not pretrained:
             self.index = self.build()
@@ -48,8 +47,8 @@ class VectorIndexIVFFlat(IVectorIndex):
     def update(self, vector: np.array) -> faiss.Index:
         self.index.add(vector)
 
-    def get(self, query: np.array) -> list[list[float], list[int]]:
-        distances, vectors = self.index.search(query, self.neighbors)
+    def get(self, query: np.array, neighbors: int) -> list[list[float], list[int]]:
+        distances, vectors = self.index.search(query, neighbors)
         return distances[0], vectors[0]
 
     def train(
@@ -82,6 +81,7 @@ class VectorIndexIVFFlat(IVectorIndex):
         faiss.write_index(self.index, index_path)
 
     def load(self, index_path: Path) -> None:
-        self.index = faiss.read_index(index_path)
+        with open(index_path, "rb+") as f:
+            self.index = pickle.load(f)
         self.n_splits = self.index.nlist
         self.dim = self.index.d

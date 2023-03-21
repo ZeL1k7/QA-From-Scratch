@@ -74,6 +74,7 @@ def get_answer(
     model: AutoModel,
     device: torch.device,
     sentence: list[str],
+    neighbors: int,
 ) -> list[str]:
     query = get_sentence_embedding(
         batch=sentence,
@@ -82,6 +83,6 @@ def get_answer(
         device=device,
     )
 
-    distances, question_idxs = index.get(query)
+    distances, question_idxs = index.get(query, neighbors)
 
     return qa_index.get_items(question_idxs)
