@@ -24,7 +24,7 @@ def create_vector_index():
 
 def create_qa_index():
     subprocess.run(
-        ["python", "train_qa_index.py", "../data/Answers.json", "../data/qa.pkl"]
+        ["python", "train_qa_index.py", "../data/Questions.json", "../data/Answers.json", "../data/test_qa.pkl"]
     )
 
 
@@ -34,11 +34,6 @@ def startup_event():
     create_qa_index()
 
 
-@app.post("/send_question")
-def send_question(question: str):
-    return question
-
-
 @app.get("/send_answer")
 def send_answer(question: str, num_answers: int):
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -46,7 +41,7 @@ def send_answer(question: str, num_answers: int):
     model = load_model(device=device)
     index = VectorIndexIVFFlat(...,  ..., neighbors=num_answers, pretrained=True)
     index.load("../data/question.index")
-    qa_index = load_qa_index("../data/qa.pkl")
+    qa_index = load_qa_index("../data/test_qa.pkl")
     answer = get_answer(
         index=index,
         qa_index=qa_index,
@@ -55,4 +50,5 @@ def send_answer(question: str, num_answers: int):
         device=device,
         sentence=[question],
     )
+
     return answer

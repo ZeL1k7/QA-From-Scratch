@@ -26,6 +26,9 @@ class QuestionDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         return self.questions.items[idx].title
 
+    def __getidx__(self, idx):
+        return self.questions.items[idx].id
+
     def __len__(self):
         return len(self.questions.items)
 
