@@ -1,4 +1,3 @@
-import pickle
 from abc import ABC, abstractmethod
 from pathlib import Path
 import faiss
@@ -81,7 +80,6 @@ class VectorIndexIVFFlat(IVectorIndex):
         faiss.write_index(self.index, index_path)
 
     def load(self, index_path: Path) -> None:
-        with open(index_path, "rb+") as f:
-            self.index = pickle.load(f)
+        self.index = faiss.read_index(index_path)
         self.n_splits = self.index.nlist
         self.dim = self.index.d
