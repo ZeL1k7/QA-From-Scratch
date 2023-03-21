@@ -3,7 +3,7 @@ from pathlib import Path
 import faiss
 import numpy as np
 import torch
-from utils import get_sentence_embedding, NotTrainedException
+from utils import get_sentence_embedding, get_n_splits, NotTrainedException
 from transformers import AutoTokenizer, AutoModel
 from datasets import QuestionDataset
 
@@ -27,7 +27,11 @@ class IVectorIndex(ABC):
 
 class VectorIndexIVFFlat(IVectorIndex):
     def __init__(
-        self, dim: int, n_splits: int, neighbors: int, pretrained: bool = False
+        self,
+        dim: int = 768,
+        n_splits: int = 1,
+        neighbors: int = 1,
+        pretrained: bool = False,
     ) -> None:
         self.dim = dim
         self.n_splits = n_splits
@@ -68,7 +72,7 @@ class VectorIndexIVFFlat(IVectorIndex):
                     device=device,
                 )
 
-                index_data[idx: (idx + 1)] = sentence_embeddings
+                index_data[idx : (idx + 1)] = sentence_embeddings
 
             self.index.train(index_data)
         else:

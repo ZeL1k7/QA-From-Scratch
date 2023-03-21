@@ -56,15 +56,16 @@ def get_sentence_embedding(
     return sentence_embedding
 
 
-def get_n_splits(dataset_size: int, n_splits: int = None) -> int:
+def get_n_splits(dataset_size: int = None, n_splits: int = 1) -> int:
     """
     https://github.com/facebookresearch/faiss/wiki/Guidelines-to-choose-an-index
     :param dataset_size:
     :param n_splits:
     :return:
     """
-    if n_splits is None:
-        n_splits = int(4 * math.sqrt(dataset_size))
+    if dataset_size is not None:
+        return int(4 * math.sqrt(dataset_size))
+
     return n_splits
 
 

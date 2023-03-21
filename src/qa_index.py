@@ -27,20 +27,28 @@ class IQAIndex(ABC):
 
 
 class QAIndexHashMap(IQAIndex):
-    def __init__(self, question_dataset: QuestionDataset, answer_dataset: AnswerDataset) -> None:
+    def __init__(
+        self, question_dataset: QuestionDataset, answer_dataset: AnswerDataset
+    ) -> None:
         self._hash_map_question = defaultdict(None)
         self._hash_map_answer = defaultdict(list)
         self._question_dataset = question_dataset
         self._answer_dataset = answer_dataset
 
     def build(self) -> None:
-        for idx in range(len(self._question_dataset)):  # hash_map[vector_idx] = parent_idx
-            self._hash_map_question[idx] = self._question_dataset.__getidx__(idx)
+        for idx in range(
+            len(self._question_dataset)
+        ):  # hash_map[vector_idx] = parent_idx
+            self._hash_map_question[idx] = self._question_dataset.__getid__(idx)
 
         for item in self._answer_dataset:  # hash_map[parent_id] = answer
             self.update(item.parent_id, item)
 
-    def update(self, idx: int, item: str) -> None:  #append parent_id -> answer
+    def update(
+        self,
+        idx: int,
+        item: str,
+    ) -> None:  # append hash_map[parent_id] = answer
         self._hash_map_answer[idx].append(item)
 
     def get(self, idx: int) -> list[str]:
