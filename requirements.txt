@@ -70,7 +70,7 @@ docutils @ file:///opt/conda/conda-bld/docutils_1657175430858/work
 entrypoints @ file:///tmp/build/80754af9/entrypoints_1649926439650/work
 et-xmlfile==1.1.0
 faiss-cpu==1.7.3
-fastapi==0.95.0
+fastapi~=0.88.0
 fastjsonschema @ file:///opt/conda/conda-bld/python-fastjsonschema_1661371079312/work
 filelock @ file:///opt/conda/conda-bld/filelock_1647002191454/work
 flake8 @ file:///opt/conda/conda-bld/flake8_1648129545443/work
@@ -166,7 +166,7 @@ nose @ file:///opt/conda/conda-bld/nose_1642704612149/work
 notebook @ file:///tmp/abs_abf6xa6h6f/croots/recipe/notebook_1659083654985/work
 numba==0.56.4
 numexpr @ file:///opt/conda/conda-bld/numexpr_1656940300424/work
-numpy==1.23.5
+numpy~=1.22.4
 numpydoc @ file:///opt/conda/conda-bld/numpydoc_1657529872251/work
 nvidia-cublas-cu11==11.10.3.66
 nvidia-cuda-cupti-cu11==11.7.101
@@ -217,7 +217,7 @@ pycosat==0.6.3
 pycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work
 pyct @ file:///tmp/abs_68a517ee-55fb-480e-82ab-1a8adb440a58x7qfc024/croots/recipe/pyct_1658500310800/work
 pycurl==7.45.1
-pydantic==1.10.6
+pydantic~=1.10.2
 PyDispatcher==2.0.5
 pydocstyle @ file:///tmp/build/80754af9/pydocstyle_1621600989141/work
 pyerfa @ file:///tmp/build/80754af9/pyerfa_1621556109336/work
@@ -317,7 +317,7 @@ torchvision==0.15.1
 tornado @ file:///tmp/build/80754af9/tornado_1606942317143/work
 tqdm @ file:///opt/conda/conda-bld/tqdm_1664392687731/work
 traitlets @ file:///tmp/build/80754af9/traitlets_1636710298902/work
-transformers==4.27.1
+transformers~=4.25.1
 triton==2.0.0
 Twisted @ file:///tmp/abs_82802zpkox/croots/recipe/twisted_1659592759417/work
 typer==0.7.0
@@ -346,3 +346,5 @@ yapf @ file:///tmp/build/80754af9/yapf_1615749224965/work
 zict==2.1.0
 zipp @ file:///opt/conda/conda-bld/zipp_1652341764480/work
 zope.interface @ file:///tmp/build/80754af9/zope.interface_1625036153595/work
+
+faiss~=1.7.2
