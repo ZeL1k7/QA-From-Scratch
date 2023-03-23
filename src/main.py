@@ -12,7 +12,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 tokenizer = load_tokenizer()
 model = load_model(device=device)
 index = VectorIndexIVFFlat(pretrained=True)
-index.load("../data/question.index")
+index.load("../data/vector.index")
 qa_index = load_qa_index("../data/qa_index.pkl")
 
 

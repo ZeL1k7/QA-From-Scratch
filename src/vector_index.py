@@ -60,6 +60,7 @@ class VectorIndexIVFFlat(IVectorIndex):
     ) -> None:
         if not self.index.is_trained:
             device = "cuda" if torch.cuda.is_available() else "cpu"
+
             dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size)
             index_data = np.zeros((len(dataset), self.dim), dtype=np.float32)
 
