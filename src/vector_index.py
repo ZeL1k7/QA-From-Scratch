@@ -6,6 +6,7 @@ import torch
 from utils import get_sentence_embedding, NotTrainedException
 from transformers import AutoTokenizer, AutoModel
 from datasets import QuestionDataset
+from tqdm import tqdm
 
 
 class IVectorIndex(ABC):
@@ -62,7 +63,7 @@ class VectorIndexIVFFlat(IVectorIndex):
             dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size)
             index_data = np.zeros((len(dataset), self.dim), dtype=np.float32)
 
-            for idx, batch in enumerate(dataloader):
+            for idx, batch in tqdm(enumerate(dataloader)):
                 sentence_embeddings = get_sentence_embedding(
                     batch=batch,
                     tokenizer=tokenizer,
@@ -70,7 +71,9 @@ class VectorIndexIVFFlat(IVectorIndex):
                     device=device,
                 )
 
-                index_data[idx : (idx + 1)] = sentence_embeddings
+                index_data[
+                    batch_size * idx : batch_size * (idx + 1)
+                ] = sentence_embeddings
 
             self.index.train(index_data)
         else:

@@ -16,7 +16,7 @@ class Questions(BaseModel):
 class QuestionDataset(torch.utils.data.Dataset):
     def __init__(self, questions: Questions) -> None:
         super().__init__()
-        self.questions = questions
+        self.questions = questions.items
 
     @classmethod
     def from_json(cls, path: Path):
@@ -24,13 +24,13 @@ class QuestionDataset(torch.utils.data.Dataset):
         return cls(questions=questions)
 
     def __getitem__(self, idx):
-        return self.questions.items[idx].title
+        return self.questions[idx].title
 
     def __getid__(self, idx):
-        return self.questions.items[idx].id
+        return self.questions[idx].id
 
     def __len__(self):
-        return len(self.questions.items)
+        return len(self.questions)
 
 
 class Answer(BaseModel):
@@ -46,7 +46,7 @@ class Answers(BaseModel):
 
 class AnswerDataset:
     def __init__(self, answers: Answers) -> None:
-        self.answers = answers
+        self.answers = answers.items
 
     @classmethod
     def from_json(cls, path: Path):
@@ -54,7 +54,7 @@ class AnswerDataset:
         return cls(answers=answers)
 
     def __getitem__(self, idx):
-        return self.answers.items[idx]
+        return self.answers[idx]
 
     def __len__(self):
-        return len(self.answers.items)
+        return len(self.answers)
