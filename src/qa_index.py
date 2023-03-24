@@ -1,12 +1,13 @@
+import pickle
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from datasets import QuestionDataset, AnswerDataset
-from transformers import AutoTokenizer, AutoModel
-from vector_index import IVectorIndex
-from utils import get_sentence_embedding
-import torch
 from pathlib import Path
-import pickle
+
+import torch
+from datasets import AnswerDataset, QuestionDataset
+from transformers import AutoModel, AutoTokenizer
+from utils import get_sentence_embedding
+from vector_index import IVectorIndex
 
 
 class IQAIndex(ABC):

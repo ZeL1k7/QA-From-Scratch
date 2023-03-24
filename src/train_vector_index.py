@@ -1,14 +1,10 @@
 from pathlib import Path
+
 import torch
 import typer
-from utils import (
-    load_model,
-    load_tokenizer,
-    get_n_splits,
-)
-from vector_index import VectorIndexIVFFlat
 from datasets import QuestionDataset
-from utils import get_sentence_embedding
+from utils import get_n_splits, get_sentence_embedding, load_model, load_tokenizer
+from vector_index import VectorIndexIVFFlat
 
 
 def main(question_path: Path, index_save_path: Path, batch_size: int, device: str):

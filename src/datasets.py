@@ -1,7 +1,8 @@
-from typing import List
 from pathlib import Path
-from pydantic import BaseModel, Field
+from typing import List
+
 import torch
+from pydantic import BaseModel, Field
 
 
 class Question(BaseModel):

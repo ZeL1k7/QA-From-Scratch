@@ -1,7 +1,8 @@
 import math
 from functools import lru_cache
+
 import torch
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoModel, AutoTokenizer
 
 
 @lru_cache(1)

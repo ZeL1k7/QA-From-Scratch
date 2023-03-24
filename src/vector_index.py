@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
+
 import faiss
 import numpy as np
 import torch
-from utils import get_sentence_embedding, NotTrainedException
-from transformers import AutoTokenizer, AutoModel
 from datasets import QuestionDataset
 from tqdm import tqdm
+from transformers import AutoModel, AutoTokenizer
+from utils import NotTrainedException, get_sentence_embedding
 
 
 class IVectorIndex(ABC):

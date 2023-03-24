@@ -1,9 +1,8 @@
 import torch
 from fastapi import FastAPI
-from utils import load_tokenizer, load_model
+from qa_index import get_answer, load_qa_index
+from utils import load_model, load_tokenizer
 from vector_index import VectorIndexIVFFlat
-from qa_index import load_qa_index, get_answer
-
 
 app = FastAPI()
 
