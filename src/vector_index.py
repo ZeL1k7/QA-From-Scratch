@@ -40,6 +40,13 @@ class VectorIndexIVFFlat(IVectorIndex):
         if not pretrained:
             self.index = self.build()
 
+    @classmethod
+    def from_pretrained(cls, index_path: Path) -> faiss.Index:
+        index = faiss.read_index(index_path)
+        n_splits = index.nlist
+        dim = index.d
+        return cls(index=index, dim=dim, n_splits=n_splits)
+
     def build(self) -> faiss.Index:
         quantizer = faiss.IndexFlatL2(self.dim)
         index = faiss.IndexIVFFlat(quantizer, self.dim, self.n_splits)

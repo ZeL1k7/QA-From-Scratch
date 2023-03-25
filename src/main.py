@@ -1,6 +1,6 @@
 import torch
 from fastapi import FastAPI
-from qa_index import get_answer, load_qa_index
+from qa_index import get_answer, QAIndexHashMap
 from utils import load_model, load_tokenizer
 from vector_index import VectorIndexIVFFlat
 
@@ -12,9 +12,8 @@ app = FastAPI()
 device = "cuda" if torch.cuda.is_available() else "cpu"
 tokenizer = load_tokenizer()
 model = load_model(device=device)
-index = VectorIndexIVFFlat(pretrained=True)
-index.load("../data/vector.index")
-qa_index = load_qa_index("../data/qa_index.pkl")
+index = VectorIndexIVFFlat.from_pretrained("data/vector.index")
+qa_index = QAIndexHashMap.from_pretrained("data/qa_index.pkl")
 
 
 @app.get("/send_answer")

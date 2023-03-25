@@ -38,6 +38,21 @@ class QAIndexHashMap(IQAIndex):
         self._question_dataset = question_dataset
         self._answer_dataset = answer_dataset
 
+    @classmethod
+    def from_pretrained(cls, index_path: Path) -> "QAIndexHashMap":
+        with open(index_path, "rb+") as f:
+            index = pickle.load(f)
+        hash_map_question = index._hash_map_question
+        hash_map_answer = index._hash_map_answer
+        question_dataset = index._question_dataset
+        answer_dataset = index._answer_dataset
+        return cls(
+            _hash_map_questions=hash_map_question,
+            _hash_map_answer=hash_map_answer,
+            _questions_dataset=question_dataset,
+            _answer_dataset=answer_dataset,
+        )
+
     def build(self) -> None:
         for idx, _ in enumerate(self._question_dataset):
             self._hash_map_question[idx] = self._question_dataset.__getid__(idx)
@@ -56,11 +71,6 @@ class QAIndexHashMap(IQAIndex):
 def save_qa_index(qa_index: IQAIndex, index_save_path: Path) -> None:
     with open(index_save_path, "wb+") as f:
         pickle.dump(qa_index, f)
-
-
-def load_qa_index(index_path: Path) -> IQAIndex:
-    with open(index_path, "rb+") as f:
-        return pickle.load(f)
 
 
 def get_answer(
