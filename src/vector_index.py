@@ -36,9 +36,9 @@ class VectorIndexIVFFlat(IVectorIndex):
         n_splits: int = 1,
         index: Optional[faiss.Index] = None,
     ) -> None:
-        self.index = index
-        self.dim = dim
-        self.n_splits = n_splits
+        self._index = index
+        self._dim = dim
+        self._n_splits = n_splits
 
     @classmethod
     def from_pretrained(cls, index_path: Path) -> "VectorIndexIVFFlat":
@@ -48,14 +48,14 @@ class VectorIndexIVFFlat(IVectorIndex):
         return cls(index=index, dim=dim, n_splits=n_splits)
 
     def build(self) -> None:
-        quantizer = faiss.IndexFlatL2(self.dim)
-        self.index = faiss.IndexIVFFlat(quantizer, self.dim, self.n_splits)
+        quantizer = faiss.IndexFlatL2(self._dim)
+        self._index = faiss.IndexIVFFlat(quantizer, self._dim, self._n_splits)
 
     def update(self, vector: np.array) -> None:
-        self.index.add(vector)
+        self._index.add(vector)
 
     def get(self, query: np.array, neighbors: int) -> list[list[float], list[int]]:
-        distances, vectors = self.index.search(query, neighbors)
+        distances, vectors = self._index.search(query, neighbors)
         return distances[0], vectors[0]
 
     def train(
@@ -65,11 +65,11 @@ class VectorIndexIVFFlat(IVectorIndex):
         dataset: QuestionDataset,
         batch_size: int,
     ) -> None:
-        if not self.index.is_trained:
+        if not self._index.is_trained:
             device = "cuda" if torch.cuda.is_available() else "cpu"
 
             dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size)
-            index_data = np.zeros((len(dataset), self.dim), dtype=np.float32)
+            index_data = np.zeros((len(dataset), self._dim), dtype=np.float32)
 
             for idx, batch in tqdm(enumerate(dataloader)):
                 sentence_embeddings = get_sentence_embedding(
@@ -83,9 +83,9 @@ class VectorIndexIVFFlat(IVectorIndex):
                     batch_size * idx : batch_size * (idx + 1)
                 ] = sentence_embeddings
 
-            self.index.train(index_data)
+            self._index.train(index_data)
         else:
-            raise NotTrainedException(self.index)
+            raise NotTrainedException(self._index)
 
     def save(self, index_path: Path) -> None:
-        faiss.write_index(self.index, index_path)
+        faiss.write_index(self._index, index_path)
