@@ -1,9 +1,10 @@
+from typing import Union
+
 import torch
 from fastapi import FastAPI
-from qa_index import get_answer
-from factory import QAFactory
 
-from typing import Union
+from factory import QAFactory
+from qa_index import get_answer
 
 app = FastAPI()
 

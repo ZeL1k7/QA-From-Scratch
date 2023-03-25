@@ -1,10 +1,9 @@
 import math
 from functools import lru_cache
+from typing import Optional, Union
 
 import torch
 from transformers import AutoModel, AutoTokenizer
-
-from typing import Union, Optional
 
 
 @lru_cache(1)

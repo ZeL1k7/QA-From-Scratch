@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import Optional
 
 import faiss
 import numpy as np
 import torch
-from datasets import QuestionDataset
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer
-from utils import NotTrainedException, get_sentence_embedding
 
-from typing import Optional
+from datasets import QuestionDataset
+from utils import NotTrainedException, get_sentence_embedding
 
 
 class IVectorIndex(ABC):
@@ -41,7 +41,7 @@ class VectorIndexIVFFlat(IVectorIndex):
         self.n_splits = n_splits
 
     @classmethod
-    def from_pretrained(cls, index_path: Path) -> None:
+    def from_pretrained(cls, index_path: Path) -> "VectorIndexIVFFlat":
         index = faiss.read_index(index_path)
         n_splits = index.nlist
         dim = index.d
@@ -89,8 +89,3 @@ class VectorIndexIVFFlat(IVectorIndex):
 
     def save(self, index_path: Path) -> None:
         faiss.write_index(self.index, index_path)
-
-    def load(self, index_path: Path) -> None:
-        self.index = faiss.read_index(index_path)
-        self.n_splits = self.index.nlist
-        self.dim = self.index.d

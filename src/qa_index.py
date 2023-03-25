@@ -2,14 +2,14 @@ import pickle
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from pathlib import Path
+from typing import Optional, Union
 
 import torch
-from datasets import AnswerDataset, QuestionDataset, Question
 from transformers import AutoModel, AutoTokenizer
+
+from datasets import AnswerDataset, Question, QuestionDataset
 from utils import get_sentence_embedding
 from vector_index import IVectorIndex
-
-from typing import Union, Optional
 
 
 class IQAIndex(ABC):
@@ -35,7 +35,7 @@ class QAIndexHashMap(IQAIndex):
         question_dataset: QuestionDataset,
         answer_dataset: AnswerDataset,
         hash_map_question: Optional[dict] = defaultdict(None),
-        hash_map_answer: Optional[dict] = defaultdict(None),
+        hash_map_answer: Optional[dict] = defaultdict(list),
     ) -> None:
         self._hash_map_question = hash_map_question
         self._hash_map_answer = hash_map_answer

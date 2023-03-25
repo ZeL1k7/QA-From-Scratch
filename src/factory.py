@@ -1,10 +1,12 @@
 from abc import ABC, abstractmethod
+from functools import lru_cache
+from pathlib import Path
+
+import torch
+
+from qa_index import QAIndexHashMap
 from utils import load_model, load_tokenizer
 from vector_index import VectorIndexIVFFlat
-from qa_index import QAIndexHashMap
-from pathlib import Path
-import torch
-from functools import lru_cache
 
 
 class IFactory(ABC):
@@ -28,7 +30,7 @@ class IFactory(ABC):
 class QAFactory(IFactory):
     def __init__(
         self, vector_index_path: Path, qa_index_path: Path, device: torch.device
-    ):
+    ) -> None:
         self._vector_index_path = vector_index_path
         self._qa_index_path = qa_index_path
         self._device = device

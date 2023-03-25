@@ -20,7 +20,7 @@ class QuestionDataset(torch.utils.data.Dataset):
         self.questions = questions.items
 
     @classmethod
-    def from_json(cls, path: Path):
+    def from_json(cls, path: Path) -> "QuestionDataset":
         questions = Questions.parse_file(path)
         return cls(questions=questions)
 
@@ -50,7 +50,7 @@ class AnswerDataset:
         self.answers = answers.items
 
     @classmethod
-    def from_json(cls, path: Path):
+    def from_json(cls, path: Path) -> "AnswerDataset":
         answers = Answers.parse_file(path)
         return cls(answers=answers)
 

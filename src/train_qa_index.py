@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import typer
+
 from datasets import AnswerDataset, QuestionDataset
 from qa_index import QAIndexHashMap, save_qa_index
 

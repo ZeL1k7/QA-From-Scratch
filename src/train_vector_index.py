@@ -2,6 +2,7 @@ from pathlib import Path
 
 import torch
 import typer
+
 from datasets import QuestionDataset
 from utils import get_n_splits, get_sentence_embedding, load_model, load_tokenizer
 from vector_index import VectorIndexIVFFlat
