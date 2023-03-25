@@ -4,6 +4,8 @@ from functools import lru_cache
 import torch
 from transformers import AutoModel, AutoTokenizer
 
+from typing import Union, Optional
+
 
 @lru_cache(1)
 def load_model(device: torch.device = "cpu") -> AutoModel:
@@ -37,7 +39,7 @@ def mean_pooling(
 
 
 def get_sentence_embedding(
-    batch: list[str],
+    batch: Union[str, list[str], list[list[str]]],
     tokenizer: AutoTokenizer,
     model: AutoModel,
     device: torch.device,
@@ -57,7 +59,7 @@ def get_sentence_embedding(
     return sentence_embedding
 
 
-def get_n_splits(dataset_size: int = None, n_splits: int = 1) -> int:
+def get_n_splits(dataset_size: Optional[int] = None, n_splits: int = 1) -> int:
     """
     https://github.com/facebookresearch/faiss/wiki/Guidelines-to-choose-an-index
     :param dataset_size:
