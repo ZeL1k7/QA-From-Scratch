@@ -9,7 +9,7 @@ from transformers import AutoModel, AutoTokenizer
 from utils import get_sentence_embedding
 from vector_index import IVectorIndex
 
-from typing import Union
+from typing import Union, Optional
 
 
 class IQAIndex(ABC):
@@ -31,10 +31,14 @@ class IQAIndex(ABC):
 
 class QAIndexHashMap(IQAIndex):
     def __init__(
-        self, question_dataset: QuestionDataset, answer_dataset: AnswerDataset
+        self,
+        question_dataset: QuestionDataset,
+        answer_dataset: AnswerDataset,
+        hash_map_question: Optional[dict] = defaultdict(None),
+        hash_map_answer: Optional[dict] = defaultdict(None),
     ) -> None:
-        self._hash_map_question = defaultdict(None)
-        self._hash_map_answer = defaultdict(list)
+        self._hash_map_question = hash_map_question
+        self._hash_map_answer = hash_map_answer
         self._question_dataset = question_dataset
         self._answer_dataset = answer_dataset
 
@@ -47,10 +51,10 @@ class QAIndexHashMap(IQAIndex):
         question_dataset = index._question_dataset
         answer_dataset = index._answer_dataset
         return cls(
-            _hash_map_questions=hash_map_question,
-            _hash_map_answer=hash_map_answer,
-            _questions_dataset=question_dataset,
-            _answer_dataset=answer_dataset,
+            hash_map_question=hash_map_question,
+            hash_map_answer=hash_map_answer,
+            question_dataset=question_dataset,
+            answer_dataset=answer_dataset,
         )
 
     def build(self) -> None:
@@ -89,6 +93,6 @@ def get_answer(
         device=device,
     )
 
-    distances, question_idxs = index.get(query, neighbors)
+    _, question_idxs = index.get(query, neighbors)
 
     return qa_index.get_items(question_idxs)

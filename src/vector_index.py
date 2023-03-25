@@ -9,6 +9,8 @@ from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer
 from utils import NotTrainedException, get_sentence_embedding
 
+from typing import Optional
+
 
 class IVectorIndex(ABC):
     @abstractmethod
@@ -32,27 +34,24 @@ class VectorIndexIVFFlat(IVectorIndex):
         self,
         dim: int = 768,
         n_splits: int = 1,
-        pretrained: bool = False,
+        index: Optional[faiss.Index] = None,
     ) -> None:
+        self.index = index
         self.dim = dim
         self.n_splits = n_splits
-        self.index = None
-        if not pretrained:
-            self.index = self.build()
 
     @classmethod
-    def from_pretrained(cls, index_path: Path) -> faiss.Index:
+    def from_pretrained(cls, index_path: Path) -> None:
         index = faiss.read_index(index_path)
         n_splits = index.nlist
         dim = index.d
         return cls(index=index, dim=dim, n_splits=n_splits)
 
-    def build(self) -> faiss.Index:
+    def build(self) -> None:
         quantizer = faiss.IndexFlatL2(self.dim)
-        index = faiss.IndexIVFFlat(quantizer, self.dim, self.n_splits)
-        return index
+        self.index = faiss.IndexIVFFlat(quantizer, self.dim, self.n_splits)
 
-    def update(self, vector: np.array) -> faiss.Index:
+    def update(self, vector: np.array) -> None:
         self.index.add(vector)
 
     def get(self, query: np.array, neighbors: int) -> list[list[float], list[int]]:
