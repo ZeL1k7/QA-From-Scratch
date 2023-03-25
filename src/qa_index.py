@@ -4,10 +4,12 @@ from collections import defaultdict
 from pathlib import Path
 
 import torch
-from datasets import AnswerDataset, QuestionDataset
+from datasets import AnswerDataset, QuestionDataset, Question
 from transformers import AutoModel, AutoTokenizer
 from utils import get_sentence_embedding
 from vector_index import IVectorIndex
+
+from typing import Union
 
 
 class IQAIndex(ABC):
@@ -37,22 +39,16 @@ class QAIndexHashMap(IQAIndex):
         self._answer_dataset = answer_dataset
 
     def build(self) -> None:
-        for idx in range(
-            len(self._question_dataset)
-        ):  # hash_map[vector_idx] = parent_idx
+        for idx, _ in enumerate(self._question_dataset):
             self._hash_map_question[idx] = self._question_dataset.__getid__(idx)
 
-        for item in self._answer_dataset:  # hash_map[parent_id] = answer
+        for item in self._answer_dataset:
             self.update(item.parent_id, item)
 
-    def update(
-        self,
-        idx: int,
-        item: str,
-    ) -> None:  # append hash_map[parent_id] = answer
+    def update(self, idx: int, item: Question) -> None:
         self._hash_map_answer[idx].append(item)
 
-    def get(self, idx: int) -> list[str]:
+    def get(self, idx: int) -> Question:
         parent_id = self._hash_map_question[idx]
         return self._hash_map_answer[parent_id]
 
@@ -64,8 +60,7 @@ def save_qa_index(qa_index: IQAIndex, index_save_path: Path) -> None:
 
 def load_qa_index(index_path: Path) -> IQAIndex:
     with open(index_path, "rb+") as f:
-        qa_index = pickle.load(f)
-    return qa_index
+        return pickle.load(f)
 
 
 def get_answer(
@@ -74,9 +69,9 @@ def get_answer(
     tokenizer: AutoTokenizer,
     model: AutoModel,
     device: torch.device,
-    sentence: list[str],
+    sentence: Union[str, list[str], list[list[str]]],
     neighbors: int,
-) -> list[str]:
+) -> list[Question]:
     query = get_sentence_embedding(
         batch=sentence,
         tokenizer=tokenizer,
