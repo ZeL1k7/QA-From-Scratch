@@ -1,7 +1,8 @@
-from typing import List
 from pathlib import Path
-from pydantic import BaseModel, Field
+from typing import List
+
 import torch
+from pydantic import BaseModel, Field
 
 
 class Question(BaseModel):
@@ -16,18 +17,21 @@ class Questions(BaseModel):
 class QuestionDataset(torch.utils.data.Dataset):
     def __init__(self, questions: Questions) -> None:
         super().__init__()
-        self.questions = questions
+        self._questions = questions.items
 
     @classmethod
-    def from_json(cls, path: Path):
+    def from_json(cls, path: Path) -> "QuestionDataset":
         questions = Questions.parse_file(path)
         return cls(questions=questions)
 
     def __getitem__(self, idx):
-        return self.questions.items[idx].title
+        return self._questions[idx].title
+
+    def __getid__(self, idx):
+        return self._questions[idx].id
 
     def __len__(self):
-        return len(self.questions.items)
+        return len(self._questions)
 
 
 class Answer(BaseModel):
@@ -43,15 +47,15 @@ class Answers(BaseModel):
 
 class AnswerDataset:
     def __init__(self, answers: Answers) -> None:
-        self.answers = answers
+        self._answers = answers.items
 
     @classmethod
-    def from_json(cls, path: Path):
+    def from_json(cls, path: Path) -> "AnswerDataset":
         answers = Answers.parse_file(path)
         return cls(answers=answers)
 
     def __getitem__(self, idx):
-        return self.answers.items[idx]
+        return self._answers[idx]
 
     def __len__(self):
-        return len(self.answers.items)
+        return len(self._answers)
