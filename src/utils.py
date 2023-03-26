@@ -14,8 +14,10 @@ def load_model(device: torch.device = "cpu") -> AutoModel:
 
 
 @lru_cache(1)
-def load_tokenizer(*args, **kwargs) -> AutoTokenizer:
-    tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+def load_tokenizer(**tokenizer_kwargs) -> AutoTokenizer:
+    tokenizer = AutoTokenizer.from_pretrained(
+        "sentence-transformers/all-MiniLM-L6-v2", **tokenizer_kwargs
+    )
     return tokenizer
 
 

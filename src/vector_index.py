@@ -54,8 +54,8 @@ class VectorIndexIVFFlat(IVectorIndex):
     def update(self, vector: np.array) -> None:
         self._index.add(vector)
 
-    def get(self, query: np.array, neighbors: int) -> list[list[float], list[int]]:
-        distances, vectors = self._index.search(query, neighbors)
+    def get(self, vector: np.array, neighbors: int) -> list[list[float], list[int]]:
+        distances, vectors = self._index.search(vector, neighbors)
         return distances[0], vectors[0]
 
     def train(

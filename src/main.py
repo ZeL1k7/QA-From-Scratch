@@ -8,12 +8,12 @@ from qa_index import get_answer
 app = FastAPI()
 
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 factory = QAFactory(
     vector_index_path="/app/data/vector.index",
     qa_index_path="/app/data/qa_index.pkl",
-    device=device,
+    device=DEVICE,
 )
 
 tokenizer = factory.create_tokenizer()
@@ -29,7 +29,7 @@ def send_answer(question: str, num_answers: int):
         qa_index=qa_index,
         tokenizer=tokenizer,
         model=model,
-        device=device,
+        device=DEVICE,
         sentence=question,
         neighbors=num_answers,
     )
