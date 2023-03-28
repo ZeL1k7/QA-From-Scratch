@@ -6,8 +6,8 @@ COPY src/app.py /app
 
 COPY requirements_app.txt /app
 
-RUN pip install -r requirements_app.txt
+RUN  pip install --upgrade pip && pip install -r requirements_app.txt
 
-EXPOSE 8501
+EXPOSE 8051
 
 CMD ["streamlit", "run", "app.py"]
