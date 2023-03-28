@@ -6,13 +6,15 @@ import requests
 @st.cache_data
 def load_answers(question, num_answers=15):
     request = requests.get(
-        f"http://127.0.0.1:8080/send_answer",
+        "http://localhost:8080/send_answer",
         params={"question": question, "num_answers": num_answers},
     ).json()
 
     df = pd.DataFrame(request)
 
-    answers_base = [j["text"] for i in df for j in df[i] if j is not None]
+    answers_base = [
+        answer["text"] for item in df for answer in df[item] if answer is not None
+    ]
 
     return answers_base
 
