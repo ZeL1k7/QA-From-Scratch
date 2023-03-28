@@ -7,7 +7,7 @@ COPY data/ /app/data
 
 COPY requirements_main.txt /app
 
-RUN pip install --upgrade pip && pip install -r requirements_main.txt
+RUN pip install --upgrade pip && pip install -r requirements_backend.txt
 
 WORKDIR /app/src
 
