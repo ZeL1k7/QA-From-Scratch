@@ -4,10 +4,8 @@ WORKDIR /app
 
 COPY src/app.py /app
 
-COPY requirements_app.txt /app
+COPY requirements_frontend.txt /app
 
 RUN  pip install --upgrade pip && pip install -r requirements_frontend.txt
-
-EXPOSE 8051
 
 CMD ["streamlit", "run", "app.py"]

@@ -6,7 +6,7 @@ import requests
 @st.cache_data
 def load_answers(question, num_answers=15):
     request = requests.get(
-        "http://localhost:8080/send_answer",
+        "http://backend:8080/send_answer",
         params={"question": question, "num_answers": num_answers},
     ).json()
 

@@ -5,12 +5,10 @@ WORKDIR /app
 COPY src/ /app/src
 COPY data/ /app/data
 
-COPY requirements_main.txt /app
+COPY requirements_backend.txt /app
 
 RUN pip install --upgrade pip && pip install -r requirements_backend.txt
 
 WORKDIR /app/src
-
-EXPOSE 8080
 
 CMD ["uvicorn", "main:app",  "--reload", "--port=8080"] 
