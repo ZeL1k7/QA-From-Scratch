@@ -8,4 +8,6 @@ COPY requirements_frontend.txt /app
 
 RUN  pip install --upgrade pip && pip install -r requirements_frontend.txt
 
-CMD ["streamlit", "run", "app.py"]
+EXPOSE 8501
+
+CMD ["streamlit", "run", "app.py", "--server.enableCORS", "false", "--server.enableXsrfProtection", "false"]

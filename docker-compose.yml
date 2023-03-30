@@ -7,14 +7,14 @@ services:
     image: backend
     container_name: backend
     ports:
-      - "8080:8080"
+      - '8080:8080'
   frontend:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-      args:
-        - REPOSITORY=QA-From-Scratch
     image: frontend
     container_name: frontend
     ports:
-      - "8501:8501"
+      - '8501:8501'
+    depends_on:
+      - backend
