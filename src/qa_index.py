@@ -7,7 +7,7 @@ from typing import Optional, Union
 import torch
 from transformers import AutoModel, AutoTokenizer
 
-from datasets import AnswerDataset, Question, QuestionDataset
+from datasets import AnswerDataset, Answer, QuestionDataset
 from utils import get_sentence_embedding
 from vector_index import IVectorIndex
 
@@ -64,10 +64,10 @@ class QAIndexHashMap(IQAIndex):
         for item in self._answer_dataset:
             self.update(item.parent_id, item)
 
-    def update(self, idx: int, item: Question) -> None:
+    def update(self, idx: int, item: Answer) -> None:
         self._hash_map_answer[idx].append(item)
 
-    def get(self, idx: int) -> Question:
+    def get(self, idx: int) -> Answer:
         parent_id = self._hash_map_question[idx]
         return self._hash_map_answer[parent_id]
 
@@ -85,7 +85,7 @@ def get_answer(
     device: torch.device,
     sentence: Union[str, list[str], list[list[str]]],
     neighbors: int,
-) -> list[Question]:
+) -> list[Answer]:
     query = get_sentence_embedding(
         batch=sentence,
         tokenizer=tokenizer,
