@@ -1,5 +1,5 @@
-# Question Answering API
-Question Answering system based on  preloaded answers of k-nearest questions.
+# StackOverflow Search System API
+StackOverflow Search system based on searching among preloaded answers of k-nearest questions.
 
 ![image](https://user-images.githubusercontent.com/57365696/228701190-d25a7abe-f06d-4d03-aba4-67f46b34dab3.png)
 
